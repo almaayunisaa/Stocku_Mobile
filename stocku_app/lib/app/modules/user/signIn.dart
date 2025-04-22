@@ -4,12 +4,16 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:stocku_app/app/modules/user/home.dart';
 import 'package:stocku_app/app/modules/user/signUp.dart';
 import 'package:stocku_app/app/widgets/textField.dart';
+import 'package:get/get.dart';
+
+import '../../controllers/authController.dart';
 
 class Signin extends StatelessWidget {
   const Signin({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final authController = Get.put(AuthController());
     return Scaffold(
       backgroundColor: Color(0xFFEA8D45),
       body: SafeArea(
@@ -70,19 +74,16 @@ class Signin extends StatelessWidget {
                           ),
                         ),
                         SizedBox(height: 22),
-                        CustomTextField(hintText: 'Username', iconPath: 'lib/assets/icon/user_icon.svg'),
+                        CustomTextField(hintText: 'Username', iconPath: 'lib/assets/icon/user_icon.svg', controller: authController.usernameController),
                         SizedBox(height: 15),
-                        CustomTextField(hintText: 'Kata Sandi', iconPath: 'lib/assets/icon/user_icon.svg'),
+                        CustomTextField(hintText: 'Kata Sandi', iconPath: 'lib/assets/icon/user_icon.svg', controller: authController.passwordController),
                         SizedBox(height: 23),
                         SizedBox(
                           width: double.infinity,
                           height: 50,
                           child: ElevatedButton(
                               onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => Home()),
-                                );
+                                authController.signIn(authController.usernameController.text, authController.passwordController.text);
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Color(0xFFEA8D45),
@@ -125,10 +126,7 @@ class Signin extends StatelessWidget {
                                         ),
                                         recognizer: TapGestureRecognizer()
                                           ..onTap = () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(builder: (context) => Signup()),
-                                            );
+                                            Get.toNamed('/signUp');
                                           },
                                       )
                                     ]

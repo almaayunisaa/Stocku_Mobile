@@ -3,12 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:stocku_app/app/modules/user/signIn.dart';
 import 'package:stocku_app/app/widgets/textField.dart';
+import 'package:get/get.dart';
+import '../../controllers/authController.dart';
 
 class Signup extends StatelessWidget {
   const Signup({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final authController = Get.put(AuthController());
     return Scaffold(
         backgroundColor: Color(0xFFEA8D45),
         body: SafeArea(
@@ -69,23 +72,28 @@ class Signup extends StatelessWidget {
                         ),
                       ),
                       SizedBox(height: 22),
-                      CustomTextField(hintText: 'Username', iconPath: 'lib/assets/icon/user_icon.svg'),
+                      CustomTextField(hintText: 'Username', iconPath: 'lib/assets/icon/user_icon.svg', controller: authController.usernameController),
                       SizedBox(height: 15),
-                      CustomTextField(hintText: 'Email', iconPath: 'lib/assets/icon/email_icon.svg'),
+                      CustomTextField(hintText: 'Email', iconPath: 'lib/assets/icon/email_icon.svg', controller: authController.emailController),
                       SizedBox(height: 15),
-                      CustomTextField(hintText: 'Kata Sandi', iconPath: 'lib/assets/icon/user_icon.svg'),
+                      CustomTextField(hintText: 'Kata Sandi', iconPath: 'lib/assets/icon/user_icon.svg', controller: authController.passwordController),
                       SizedBox(height: 15),
-                      CustomTextField(hintText: 'Konfirmasi Kata Sandi', iconPath: 'lib/assets/icon/user_icon.svg'),
+                      CustomTextField(hintText: 'Konfirmasi Kata Sandi', iconPath: 'lib/assets/icon/user_icon.svg', controller: authController.confirmPasswordController),
                       SizedBox(height: 43),
                       SizedBox(
                         width: double.infinity,
                         height: 50,
                         child: ElevatedButton(
                             onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => Signin()),
-                              );
+                              if (authController.passwordController.text == authController.confirmPasswordController.text) {
+                                authController.signUp(
+                                  authController.usernameController.text,
+                                  authController.emailController.text,
+                                  authController.passwordController.text,
+                                );
+                              } else {
+                                Get.snackbar('Error', 'Passwords do not match');
+                              }
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Color(0xFFEA8D45),
@@ -127,10 +135,7 @@ class Signup extends StatelessWidget {
                                       ),
                                       recognizer: TapGestureRecognizer()
                                         ..onTap = () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(builder: (context) => Signin()),
-                                          );
+                                          Get.toNamed('/signIn');
                                         },
                                     )
                                   ]

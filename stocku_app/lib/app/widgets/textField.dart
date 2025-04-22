@@ -4,14 +4,16 @@ import 'package:flutter_svg/flutter_svg.dart';
 class CustomTextField extends StatelessWidget {
   final String hintText;
   final String iconPath;
+  final TextEditingController? controller;
 
-  const CustomTextField({super.key, required this.hintText, required this.iconPath});
+  const CustomTextField({super.key, required this.hintText, required this.iconPath, this.controller});
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: 42,
       child: TextFormField(
+        controller: controller,
         decoration: InputDecoration(
           hintText: hintText,
           hintStyle: TextStyle(
