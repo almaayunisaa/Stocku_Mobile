@@ -2,15 +2,47 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:stocku_app/app/controllers/productController.dart';
-
 import 'package:stocku_app/app/modules/product/infoProdukPage.dart';
 import 'package:stocku_app/app/modules/product/addProdPage.dart';
 
-
-class ProdukPage extends StatelessWidget {
-  final productController = Get.put(ProductController());
+class ProdukPage extends StatefulWidget {
   final String namaCat;
   ProdukPage({super.key, required this.namaCat});
+
+  @override
+  State<ProdukPage> createState() => _ProdukPageState();
+}
+
+class _ProdukPageState extends State<ProdukPage> {
+  final productController = Get.put(ProductController());
+  List<Map<String, dynamic>> semuaProduk = [];
+  List<Map<String, dynamic>> produkTampil = [];
+  final TextEditingController searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    fetchProduk();
+  }
+
+  void fetchProduk() async {
+    final hasil = await productController.ambilProduk(widget.namaCat);
+    setState(() {
+      semuaProduk = hasil;
+      produkTampil = hasil;
+    });
+  }
+
+  void searchProduk(String query) {
+    final hasilSearch = semuaProduk.where((produk) {
+      final namaProduk = (produk['Produk'] ?? '').toString().toLowerCase();
+      return namaProduk.contains(query.toLowerCase());
+    }).toList();
+
+    setState(() {
+      produkTampil = hasilSearch;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +82,7 @@ class ProdukPage extends StatelessWidget {
                   Positioned(
                     bottom: 16,
                     child: Text(
-                      namaCat,
+                      widget.namaCat,
                       style: TextStyle(
                         fontFamily: 'Poppins',
                         fontSize: 16,
@@ -63,7 +95,6 @@ class ProdukPage extends StatelessWidget {
               ),
             ),
 
-            // Body
             Expanded(
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 23, vertical: 16),
@@ -86,6 +117,7 @@ class ProdukPage extends StatelessWidget {
                         ],
                       ),
                       child: SearchBar(
+                        controller: searchController,
                         hintText: 'Cari produk',
                         backgroundColor: MaterialStateProperty.all(Colors.white),
                         textStyle: MaterialStateProperty.all(
@@ -102,117 +134,107 @@ class ProdukPage extends StatelessWidget {
                               height: 16,
                             ),
                             onPressed: () {
-                              print('Button Clicked!');
+                              searchProduk(searchController.text);
                             },
                           ),
                         ],
                       ),
                     ),
-
                     Expanded(
-                      child: FutureBuilder<List<Map<String, dynamic>>>(
-                        future: productController.ambilProduk(namaCat),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
-                            return Center(child: CircularProgressIndicator());
-                          } else if (snapshot.hasError) {
-                            return Center(child: Text('Error: ${snapshot.error}'));
-                          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                            return Center(child: Text('Tidak ada produk ditemukan.'));
-                          }
-
-                          final produkList = snapshot.data!;
-                          return ListView.builder(
-                            itemCount: produkList.length,
-                            itemBuilder: (context, index) {
-                              final produk = produkList[index];
-                              return InkWell(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => InfoProdukPage(namaCat: namaCat,ID: produk['ID'])),
-                                  );
-                                },
-                                child: Container(
-                                  margin: EdgeInsets.symmetric(vertical: 8),
-                                  padding: EdgeInsets.all(20),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(10),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.15),
-                                        blurRadius: 4,
-                                        spreadRadius: 1,
-                                        offset: Offset(0, 1),
-                                      )
-                                    ],
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Container(
-                                            width: 15,
-                                            height: 15,
-                                            decoration: BoxDecoration(
-                                              color: (int.tryParse(produk['Stok'].toString()) ?? 0) < 10
-                                                  ? Colors.red
-                                                  : Color(0xFF319F43),
-                                              shape: BoxShape.circle,
-                                            ),
-                                          ),
-                                          SizedBox(width: 10),
-                                          Text(
-                                            produk['Produk'] ?? 'Nama tidak ada',
-                                            style: TextStyle(
-                                              fontFamily: 'Poppins',
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.w700,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                          Spacer(),
-                                          Text(
-                                            'Rp${produk['harga'] ?? '0'},-',
-                                            style: TextStyle(
-                                              fontFamily: 'Poppins',
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.w700,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          SizedBox(width: 24),
-                                          Text(
-                                            '#${produk['ID'] ?? 'kode'}',
-                                            style: TextStyle(
-                                              fontFamily: 'Poppins',
-                                              fontSize: 13,
-                                              fontWeight: FontWeight.w300,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                          Spacer(),
-                                          Text(
-                                            '${produk['Stok'] ?? 0} pcs',
-                                            style: TextStyle(
-                                              fontFamily: 'Poppins',
-                                              fontSize: 13,
-                                              fontWeight: FontWeight.w300,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                      child: produkTampil.isEmpty
+                          ? Center(child: Text('Tidak ada produk ditemukan.'))
+                          : ListView.builder(
+                        itemCount: produkTampil.length,
+                        itemBuilder: (context, index) {
+                          final produk = produkTampil[index];
+                          return InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => InfoProdukPage(
+                                        namaCat: widget.namaCat,
+                                        ID: produk['ID'])),
                               );
                             },
+                            child: Container(
+                              margin: EdgeInsets.symmetric(vertical: 8),
+                              padding: EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(10),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.15),
+                                    blurRadius: 4,
+                                    spreadRadius: 1,
+                                    offset: Offset(0, 1),
+                                  )
+                                ],
+                              ),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      Container(
+                                        width: 15,
+                                        height: 15,
+                                        decoration: BoxDecoration(
+                                          color: (int.tryParse(produk['Stok'].toString()) ?? 0) < 10
+                                              ? Colors.red
+                                              : Color(0xFF319F43),
+                                          shape: BoxShape.circle,
+                                        ),
+                                      ),
+                                      SizedBox(width: 10),
+                                      Text(
+                                        produk['Produk'] ?? 'Nama tidak ada',
+                                        style: TextStyle(
+                                          fontFamily: 'Poppins',
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w700,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      Spacer(),
+                                      Text(
+                                        'Rp${produk['harga'] ?? '0'},-',
+                                        style: TextStyle(
+                                          fontFamily: 'Poppins',
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w700,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      SizedBox(width: 24),
+                                      Text(
+                                        '#${produk['ID'] ?? 'kode'}',
+                                        style: TextStyle(
+                                          fontFamily: 'Poppins',
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w300,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      Spacer(),
+                                      Text(
+                                        '${produk['Stok'] ?? 0} pcs',
+                                        style: TextStyle(
+                                          fontFamily: 'Poppins',
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w300,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
                           );
                         },
                       ),
@@ -230,7 +252,7 @@ class ProdukPage extends StatelessWidget {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => AddProdPage()),
+            MaterialPageRoute(builder: (context) => AddProdPage(kategori: widget.namaCat)),
           );
         },
         child: SvgPicture.asset(

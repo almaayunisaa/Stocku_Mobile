@@ -1,19 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:stocku_app/app/controllers/productController.dart';
+import 'package:get/get.dart';
+
+import '../../class/productClass.dart';
 
 class AddProdPage extends StatefulWidget {
-  const AddProdPage({super.key});
+  final String kategori;
+  const AddProdPage({super.key, required this.kategori});
 
   @override
   State<AddProdPage> createState() => _AddProdPageState();
 }
 
 class _AddProdPageState extends State<AddProdPage> {
+  final productController = Get.put(ProductController());
+  final TextEditingController kodeController = TextEditingController();
+  final TextEditingController namaController = TextEditingController();
+  final TextEditingController kategoriController = TextEditingController();
+  final TextEditingController hargaController = TextEditingController();
+  final TextEditingController deskripsiController = TextEditingController();
+  final TextEditingController stockController = TextEditingController();
+
   int _stok = 0;
 
   void _tambahStok() {
     setState(() {
       _stok++;
+      stockController.text = _stok.toString();
     });
   }
 
@@ -21,8 +35,18 @@ class _AddProdPageState extends State<AddProdPage> {
     if (_stok > 0) {
       setState(() {
         _stok--;
+        stockController.text = _stok.toString();
       });
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.kategori != 'home') {
+      kategoriController.text = widget.kategori;
+    }
+    stockController.text = _stok.toString();
   }
 
   @override
@@ -109,6 +133,7 @@ class _AddProdPageState extends State<AddProdPage> {
                       Container(
                         height: 40,
                         child: TextField(
+                          controller: kodeController,
                           decoration: InputDecoration(
                             hintText: 'Masukkan Kode...',
                             border: OutlineInputBorder(
@@ -151,6 +176,7 @@ class _AddProdPageState extends State<AddProdPage> {
                       Container(
                         height: 40,
                         child: TextField(
+                          controller: namaController,
                           decoration: InputDecoration(
                             hintText: 'Masukkan Nama Produk...',
                             border: OutlineInputBorder(
@@ -193,8 +219,12 @@ class _AddProdPageState extends State<AddProdPage> {
                       Container(
                         height: 40,
                         child: TextField(
+                          controller: kategoriController,
+                          readOnly: widget.kategori != 'home',
                           decoration: InputDecoration(
-                            hintText: 'Masukkan Kategori...',
+                            hintText: widget.kategori == 'home'
+                                ? 'Masukkan Nama Kategori...'
+                                : widget.kategori,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -242,6 +272,7 @@ class _AddProdPageState extends State<AddProdPage> {
                                 Container(
                                   height: 40,
                                   child: TextField(
+                                    controller: hargaController,
                                     decoration: InputDecoration(
                                       hintText: 'Harga...',
                                       border: OutlineInputBorder(
@@ -355,6 +386,7 @@ class _AddProdPageState extends State<AddProdPage> {
                       Container(
                         height: 330,
                         child: TextField(
+                          controller: deskripsiController,
                           maxLines: null,
                           keyboardType: TextInputType.multiline,
                           decoration: InputDecoration(
@@ -406,25 +438,40 @@ class _AddProdPageState extends State<AddProdPage> {
           ],
         ),
         child: Center(
-            child : Container(
-              margin: EdgeInsets.only(left: 88, right: 88),
-              width: double.infinity,
-              height: 40,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: Color(0xFFEB924D),
+            child : InkWell(
+              onTap: () {
+                final product = Product(
+                  ID: kodeController.text,
+                  namaProduk: namaController.text,
+                  namaCat: kategoriController.text,
+                  harga: int.tryParse(hargaController.text) ?? 0,
+                  stok: _stok,
+                  deskripsi: deskripsiController.text,
+                );
+
+                productController.simpanProduk(product);
+                Get.toNamed('/home');
+              },
+              child: Container(
+                  margin: EdgeInsets.only(left: 88, right: 88),
+                  width: double.infinity,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Color(0xFFEB924D),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'Tambah',
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+                  )
               ),
-              child: Center(
-                child: Text(
-                'Tambah',
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
-                ),
-              ),
-              )
             )
         ),
       ),

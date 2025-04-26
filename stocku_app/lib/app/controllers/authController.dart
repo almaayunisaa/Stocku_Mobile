@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:get_storage/get_storage.dart';
 
 class AuthController extends GetxController {
-  final String baseUrl = 'http://[IP]/api/auth';
+  final String baseUrl = 'http://localhost:5500/api/auth';
   var usernameController = TextEditingController();
   var emailController = TextEditingController();
   var passwordController = TextEditingController();
@@ -34,10 +34,10 @@ class AuthController extends GetxController {
         Get.snackbar('Sukses', data['message']);
         Get.toNamed('/signIn');
       } else {
-        Get.snackbar('Gagal', data['message']);
+        Get.snackbar('Maaf', data['message']);
       }
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      print(e.toString());
     }
   }
   Future<void> signIn(String username, String password) async {
@@ -75,13 +75,51 @@ class AuthController extends GetxController {
         riwayat.add('Berhasil masuk!');
         penyimpanan.write('riwayat', riwayat);
 
-        Get.snackbar('Sukses', data['message'] ?? 'Login berhasil');
+        Get.snackbar('Sukses', 'Login berhasil');
         Get.toNamed('/home');
       } else {
-        Get.snackbar('Gagal', data['message']);
+        Get.snackbar('Maaf', data['message']);
       }
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      print(e.toString());
     }
   }
+  Future<void> ambilUserData() async {
+    final penyimpanan = GetStorage();
+    final token = penyimpanan.read('token');
+
+    if (token != null) {
+      final parts = token.split('.');
+      if (parts.length == 3) {
+        try {
+          final payload = utf8.decode(base64Url.decode(base64Url.normalize(parts[1])));
+          final data = json.decode(payload);
+          final String username = data['username'] ?? 'Pengguna';
+
+          penyimpanan.write('username', username);
+
+          final res = await http.get(
+            Uri.parse("$baseUrl/getEmail?username=$username"),
+            headers: {
+              'Authorization': 'Bearer $token',
+              'Content-Type': 'application/json',
+            },
+          );
+
+          final hasil = json.decode(res.body);
+
+          if (res.statusCode == 201) {
+            final email = hasil['email'][0]['email'] ?? 'Email tidak ditemukan';
+
+            penyimpanan.write('email', email);
+          } else {
+            print("Gagal ambil email: ${hasil['message']}");
+          }
+        } catch (e) {
+          print(e.toString());
+        }
+      }
+    }
+  }
+
 }

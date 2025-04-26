@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import '../controllers/productController.dart';
+import 'notifikasiWidget.dart' show NotifikasiWidget;
 
 final productController = Get.put(ProductController());
 void showUbahKategoriDialog(BuildContext context, TextEditingController controller, String namaLamaKategori, VoidCallback onSuccess)
@@ -101,7 +102,16 @@ void showUbahKategoriDialog(BuildContext context, TextEditingController controll
               SizedBox(height: 23),
               GestureDetector(
                 onTap: () async {
-                  productController.ubahKategori(namaLamaKategori, controller.text);
+                  await showDialog(
+                      context: context,
+                      builder: (context) {
+                        return NotifikasiWidget(
+                          onYes: () {
+                            productController.ubahKategori(namaLamaKategori, controller.text);
+                          },
+                          message: 'Apakah anda yakin mengubah kategori?',
+                        );
+                      });
                   Navigator.pop(context);
                 },
                 child: Container(

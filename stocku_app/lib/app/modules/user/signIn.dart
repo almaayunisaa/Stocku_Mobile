@@ -76,7 +76,7 @@ class Signin extends StatelessWidget {
                         SizedBox(height: 22),
                         CustomTextField(hintText: 'Username', iconPath: 'lib/assets/icon/user_icon.svg', controller: authController.usernameController),
                         SizedBox(height: 15),
-                        CustomTextField(hintText: 'Kata Sandi', iconPath: 'lib/assets/icon/user_icon.svg', controller: authController.passwordController),
+                        CustomTextField(hintText: 'Kata Sandi', iconPath: 'lib/assets/icon/user_icon.svg', controller: authController.passwordController, isPassword: true),
                         SizedBox(height: 23),
                         SizedBox(
                           width: double.infinity,

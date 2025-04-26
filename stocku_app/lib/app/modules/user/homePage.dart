@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:stocku_app/app/controllers/productController.dart';
 import 'package:stocku_app/app/modules/product/addProdPage.dart';
+import 'package:stocku_app/app/modules/product/katPage.dart';
 import 'package:stocku_app/app/widgets/buttonHomeWidget.dart';
 import 'package:get/get.dart';
 
@@ -68,7 +69,7 @@ class _HomePageState extends State<HomePage> {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => AddProdPage()),
+                          MaterialPageRoute(builder: (context) => AddProdPage(kategori: 'home')),
                         );
                       },
                     ),

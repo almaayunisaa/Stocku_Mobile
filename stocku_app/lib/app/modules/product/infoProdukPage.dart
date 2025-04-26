@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:stocku_app/app/modules/product/editProdPage.dart';
 
+import '../../class/productClass.dart';
 import '../../controllers/productController.dart';
+import '../../widgets/notifikasiWidget.dart';
 
 class InfoProdukPage extends StatelessWidget {
   final String ID;
@@ -10,6 +13,7 @@ class InfoProdukPage extends StatelessWidget {
   InfoProdukPage({super.key, required this.ID, required this.namaCat});
 
   final productController = Get.put(ProductController());
+  final cekTeksController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +35,9 @@ class InfoProdukPage extends StatelessWidget {
             }
 
             final produk = snapshot.data!;
+            final Product product = Product.fromJson(snapshot.data!, namaCat);
+
+            productController.prediksiTanggal(ID);
 
             return SingleChildScrollView(
               child: Column(
@@ -57,12 +64,21 @@ class InfoProdukPage extends StatelessWidget {
                           onPressed: () => Navigator.pop(context),
                           icon: SvgPicture.asset('lib/assets/icon/back_icon.svg'),
                         ),
-                        Text('Edit',
+                        InkWell(
+                          child: Text('Edit',
                             style: TextStyle(
                                 fontFamily: 'Poppins',
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
                                 color: Colors.white)),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => EditProdPage(kategori: namaCat, product: product)),
+                            );
+                          },
+                        )
+                        
                       ],
                     ),
                   ),
@@ -170,7 +186,7 @@ class InfoProdukPage extends StatelessWidget {
                         SizedBox(height: 14),
                         buildDetailRow('Sisa Stock', '${produk['Stok']?.toString() ?? '0'} pcs'),
                         SizedBox(height: 14),
-                        buildDetailRow('Prediksi stok habis', produk['Prediksi'] ?? '-'),
+                        buildDetailRow('Prediksi stok habis', productController.tanggalPrediksi.value),
                       ],
                     ),
                   ),
@@ -190,7 +206,140 @@ class InfoProdukPage extends StatelessWidget {
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600)),
                         Spacer(),
-                        SvgPicture.asset('lib/assets/icon/notes_icon.svg', width: 15, height: 15),
+                        InkWell(
+                          onTap: () {
+                            showModalBottomSheet(
+                              backgroundColor: Colors.white,
+                              context: context,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                              ),
+                              isScrollControlled: true,
+                              builder: (context) {
+                                return Container(
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Padding(
+                                          padding: EdgeInsets.only(
+                                              left: 26,
+                                              right: 26,
+                                              top: 20
+                                          ),
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text('Catatan produk', style:
+                                              TextStyle( fontWeight: FontWeight.w600, fontFamily: 'Poppins', fontSize: 16)),
+                                              IconButton(
+                                                icon: Icon(Icons.close_outlined, size: 24),
+                                                onPressed: () => Navigator.pop(context),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        SizedBox(height: 20),
+                                        Container(
+                                          width: double.infinity,
+                                          height: 1,
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black.withOpacity(0.15),
+                                                blurRadius: 2,
+                                                offset: Offset(0, 2),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        SizedBox(height: 15),
+                                        Padding(
+                                          padding: EdgeInsets.only(
+                                              bottom: MediaQuery.of(context).viewInsets.bottom,
+                                              left: 26,
+                                              right: 26,
+                                          ),
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              TextField(
+                                                maxLength: 150,
+                                                maxLines: 5,
+                                                decoration: InputDecoration(
+                                                  hintText: produk['Cek'],
+                                                  border: InputBorder.none,
+                                                  counterText: '',
+                                                  hintStyle: TextStyle(
+                                                    fontFamily: 'Poppins',
+                                                    fontSize: 14,
+                                                    color: Color(0xFF514F4F)
+                                                  )
+                                                ),
+                                                controller: cekTeksController,
+                                              ),
+                                              SizedBox(height: 4),
+                                              Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                  Builder(
+                                                    builder: (context) {
+                                                      final controller = TextEditingController();
+                                                      return StatefulBuilder(
+                                                        builder: (context, setState) {
+                                                          cekTeksController.addListener(() {
+                                                            setState(() {});
+                                                          });
+                                                          return Text(
+                                                            '${cekTeksController.text.length}/150',
+                                                            style: TextStyle(
+                                                              fontFamily: 'Poppins',
+                                                              fontSize: 14,
+                                                              color: Colors.black,
+                                                            ),
+                                                          );
+                                                        },
+                                                      );
+                                                    },
+                                                  ),
+                                                  Container(
+                                                    height: 36,
+                                                    width: 104,
+                                                    child: ElevatedButton(
+                                                    style: ElevatedButton.styleFrom(
+                                                      backgroundColor: Color(0xFFA46B30),
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius: BorderRadius.circular(20),
+                                                      ),
+                                                    ),
+                                                    onPressed: () {
+                                                      productController.simpanCek(ID, cekTeksController.text);
+                                                      Navigator.pop(context);
+                                                    },
+                                                    child: Text(
+                                                      'Selesai',
+                                                      style: TextStyle(
+                                                        fontSize: 14,
+                                                        fontFamily: 'Poppins',
+                                                        color: Colors.white,
+                                                        fontWeight: FontWeight.w600,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  )
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  );
+                              },
+                            );
+                          },
+                          child: SvgPicture.asset('lib/assets/icon/notes_icon.svg', width: 15, height: 15),
+                        ),
                       ],
                     ),
                   ),
@@ -200,7 +349,20 @@ class InfoProdukPage extends StatelessWidget {
           },
         ),
       ),
-      bottomNavigationBar: Container(
+      bottomNavigationBar: InkWell(
+        onTap: () {
+          showDialog(
+              context: context,
+              builder: (context) {
+                return NotifikasiWidget(
+                  onYes: () {
+                    productController.hapusProduk(ID);
+                  },
+                  message: 'Apakah anda yakin menghapus?',
+                );
+              });
+        },
+        child: Container(
         height: 82,
         decoration: BoxDecoration(
           color: Colors.white,
@@ -216,6 +378,8 @@ class InfoProdukPage extends StatelessWidget {
           child: SvgPicture.asset('lib/assets/icon/hapus_icon.svg', width: 30, height: 30),
         ),
       ),
+      )
+
     );
   }
 

@@ -5,11 +5,12 @@ import 'package:get/get.dart';
 
 class NotifikasiWidget extends StatelessWidget {
   final productController = Get.put(ProductController());
-  final String namaKategori;
+  final VoidCallback onYes;
+  final String message;
 
   NotifikasiWidget({
     Key? key,
-    required this.namaKategori,
+    required this.onYes, required this.message,
   }) : super(key: key);
 
   @override
@@ -70,7 +71,7 @@ class NotifikasiWidget extends StatelessWidget {
               padding: EdgeInsets.only(right: 39, left: 39),
               child: Expanded(
                   child: Text(
-                    'Apakah anda yakin menghapus kategori ini?',
+                    message,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontFamily: 'Poppins',
@@ -115,8 +116,8 @@ class NotifikasiWidget extends StatelessWidget {
                 Expanded(
                   child: GestureDetector(
                     onTap: () {
-                      productController.hapusKategori(namaKategori);
                       Navigator.pop(context);
+                      onYes();
                     },
                     child: Container(
                       padding: EdgeInsets.symmetric(vertical: 12),

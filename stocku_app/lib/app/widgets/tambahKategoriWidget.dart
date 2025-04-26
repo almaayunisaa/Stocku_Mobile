@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:stocku_app/app/widgets/notifikasiWidget.dart';
 import '../controllers/productController.dart';
 
 final productController = Get.put(ProductController());
@@ -101,7 +102,16 @@ void showTambahKategoriDialog(BuildContext context, TextEditingController contro
               SizedBox(height: 23),
               GestureDetector(
                 onTap: () async {
-                  productController.simpanKategori(controller.text);
+                  await showDialog(
+                      context: context,
+                      builder: (context) {
+                        return NotifikasiWidget(
+                          onYes: () {
+                            productController.simpanKategori(controller.text);
+                          },
+                          message: 'Apakah anda yakin menambahkan?',
+                        );
+                      });
                   Navigator.pop(context);
                 },
                 child: Container(

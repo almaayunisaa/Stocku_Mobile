@@ -74,7 +74,6 @@ class _KategoriPageState extends State<KategoriPage> {
                           final controller = TextEditingController();
                           showTambahKategoriDialog(context, controller, () async {
                             productController.simpanKategori(controller.text);
-                            refreshData();
                             Navigator.pop(context);
                           });
                         },
@@ -153,7 +152,10 @@ class _KategoriPageState extends State<KategoriPage> {
                                   context: context,
                                   builder: (context) {
                                     return NotifikasiWidget(
-                                      namaKategori: kategori['namaCategory'],
+                                      onYes: () {
+                                        productController.hapusKategori(kategori['namaCategory']);
+                                      },
+                                      message: 'Apakah anda yakin menghapus kategori ini?',
                                     );
                                   });
                             },

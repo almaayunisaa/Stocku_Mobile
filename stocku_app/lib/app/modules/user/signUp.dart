@@ -76,9 +76,9 @@ class Signup extends StatelessWidget {
                       SizedBox(height: 15),
                       CustomTextField(hintText: 'Email', iconPath: 'lib/assets/icon/email_icon.svg', controller: authController.emailController),
                       SizedBox(height: 15),
-                      CustomTextField(hintText: 'Kata Sandi', iconPath: 'lib/assets/icon/user_icon.svg', controller: authController.passwordController),
+                      CustomTextField(hintText: 'Kata Sandi', iconPath: 'lib/assets/icon/user_icon.svg', controller: authController.passwordController, isPassword: true),
                       SizedBox(height: 15),
-                      CustomTextField(hintText: 'Konfirmasi Kata Sandi', iconPath: 'lib/assets/icon/user_icon.svg', controller: authController.confirmPasswordController),
+                      CustomTextField(hintText: 'Konfirmasi Kata Sandi', iconPath: 'lib/assets/icon/user_icon.svg', controller: authController.confirmPasswordController, isPassword: true),
                       SizedBox(height: 43),
                       SizedBox(
                         width: double.infinity,
