@@ -16,7 +16,7 @@ class LaporanController extends GetxController {
   var totalPenjualan = ''.obs;
   var produkLaris = <Product>[].obs;
   var produkTidakLaris = <Product>[].obs;
-  final String baseUrl = 'http://localhost:5500/api';
+  final String baseUrl = 'http://192.168.1.9:5500/api';
 
   RxList<String> labelGrafik = <String>[].obs;
   RxList<int> dataGrafik = <int>[].obs;
@@ -273,4 +273,51 @@ class LaporanController extends GetxController {
     }
   }
 
+  void kirimStokKeOldProd() async {
+    final tanggalNow = DateTime.now();
+    final day = tanggalNow.day.toString().padLeft(2, '0');
+    final month = tanggalNow.month.toString().padLeft(2, '0');
+    final year = tanggalNow.year.toString().substring(2, 4);
+
+    final box = GetStorage('stokBulanIni');
+    final List<dynamic> dataStok = box.read('dataStok') ?? [];
+
+    final penyimpanan = GetStorage();
+    final token = penyimpanan.read('token');
+
+    for (var item in dataStok) {
+      final idProd = item['id']; // Ambil ID Produk
+      final stok = item['stok'];
+      final harga = item['harga'];
+
+      final idGabung = '$idProd$day$month$year'; // Format ID
+
+      final url = Uri.parse('$baseUrl/product/setOldProd'
+          '?id=$idGabung'
+          '&stok=$stok'
+          '&harga=$harga'
+          '&id_prod=$idProd'
+          '&tgl_hbs=${tanggalNow.toIso8601String()}');
+
+      try {
+        final response = await http.post(
+          url,
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        );
+
+        final hasil = jsonDecode(response.body);
+
+        if (response.statusCode == 200) {
+          print('Sukses kirim $idProd: ${hasil['message']}');
+        } else {
+          print('Gagal kirim $idProd: ${hasil['message']}');
+        }
+      } catch (e) {
+        print('Error kirim $idProd: $e');
+      }
+    }
+  }
 }

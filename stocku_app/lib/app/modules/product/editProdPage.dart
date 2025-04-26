@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:stocku_app/app/controllers/productController.dart';
 import 'package:get/get.dart';
 
@@ -23,6 +24,7 @@ class _EditProdPageState extends State<EditProdPage> {
   final TextEditingController hargaController = TextEditingController();
   final TextEditingController deskripsiController = TextEditingController();
   final TextEditingController stockController = TextEditingController();
+  int beforeStok = 0;
 
   int _stok = 0;
 
@@ -53,6 +55,7 @@ class _EditProdPageState extends State<EditProdPage> {
     deskripsiController.text = widget.product.deskripsi;
     _stok = widget.product.stok;
     stockController.text = _stok.toString();
+    beforeStok = widget.product.stok;
   }
 
   @override
@@ -453,6 +456,20 @@ class _EditProdPageState extends State<EditProdPage> {
               );
 
               productController.ubahProduk(product, kodeController.text);
+              if (beforeStok>_stok) {
+                final box = GetStorage('stokBulanIni');
+                List<dynamic> dataStok = box.read('dataStok') ?? [];
+
+                int index = dataStok.indexWhere((item) => item['id'] == kodeController.text);
+
+                if (index == -1) {
+                  dataStok.add({'id': kodeController.text, 'stok': _stok, 'harga': hargaController.text});
+                } else {
+                  dataStok[index]['stok'] = dataStok[index]['stok'] + _stok;
+                }
+
+                box.write('dataStok', dataStok);
+              }
               Get.toNamed('/home');
             },
             child: Container(

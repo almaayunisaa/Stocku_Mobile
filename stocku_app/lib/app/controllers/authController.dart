@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:get_storage/get_storage.dart';
 
 class AuthController extends GetxController {
-  final String baseUrl = 'http://localhost:5500/api/auth';
+  final String baseUrl = 'http://192.168.1.9:5500/api/auth';
   var usernameController = TextEditingController();
   var emailController = TextEditingController();
   var passwordController = TextEditingController();

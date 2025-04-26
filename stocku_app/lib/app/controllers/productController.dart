@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 import '../class/productClass.dart';
 
 class ProductController extends GetxController {
-  final String baseUrl = 'http://localhost:5500/api';
+  final String baseUrl = 'http://192.168.1.9:5500/api';
   var tanggalPrediksi = ''.obs;
 
   Future<List<Map<String, dynamic>>> ambilCatatan() async {
@@ -370,7 +370,35 @@ class ProductController extends GetxController {
   }
 
   Future<bool> bisaPrediksi(String id) async {
-    return true;
+    final penyimpanan = GetStorage();
+    final token = penyimpanan.read('token');
+
+    final url = Uri.parse('$baseUrl/product/getOldProd?id=$id');
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      final hasil = jsonDecode(response.body);
+      print(hasil);
+      if (response.statusCode == 200) {
+        if (hasil['oldproducts'].length>=12) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print(e.toString());
+      return false;
+    }
   }
   Future<void> prediksiTanggal(String id) async {
     bool bisa = await bisaPrediksi(id);
@@ -402,7 +430,7 @@ class ProductController extends GetxController {
         print(e.toString());
       }
     } else {
-      tanggalPrediksi.value = 'Belum bisa diprediksi';
+      tanggalPrediksi.value = 'Belum bisa diprediksi ';
     }
   }
   Future<void> simpanCek(String id, String cek) async {

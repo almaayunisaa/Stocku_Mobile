@@ -317,7 +317,7 @@ class _LapPageState extends State<LapPage> {
                           ),
                         ),
                         Positioned(
-                            bottom: 14,
+                            bottom: 5,
                             right: 8,
                             child: IconButton(
                               icon: SvgPicture.asset(
