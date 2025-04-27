@@ -7,8 +7,6 @@ import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:excel/excel.dart';
 import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 import '../class/productClass.dart';
 
@@ -254,7 +252,6 @@ class LaporanController extends GetxController {
           }
         }
 
-        // Pindah ke folder Download
         final directory = Directory('/storage/emulated/0/Download');
         final path = '${directory.path}/laporan.xlsx';
 
@@ -286,11 +283,11 @@ class LaporanController extends GetxController {
     final token = penyimpanan.read('token');
 
     for (var item in dataStok) {
-      final idProd = item['id']; // Ambil ID Produk
+      final idProd = item['id'];
       final stok = item['stok'];
       final harga = item['harga'];
 
-      final idGabung = '$idProd$day$month$year'; // Format ID
+      final idGabung = '$idProd$day$month$year';
 
       final url = Uri.parse('$baseUrl/product/setOldProd'
           '?id=$idGabung'

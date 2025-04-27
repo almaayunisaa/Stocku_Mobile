@@ -39,6 +39,7 @@ dependencies:
   get_storage: ^2.0.3
   fl_chart: ^0.64.0
   excel: ^2.0.1
+  video_player: ^2.7.0
 
 dev_dependencies:
   flutter_launcher_icons: ^0.13.1
@@ -102,6 +103,8 @@ flutter:
     - lib/assets/icon/down_icon.svg
     - lib/assets/icon/add2_icon.svg
     - lib/assets/icon/warn_icon.svg
+    - lib/assets/splashscreen.mp4
+
   uses-material-design: true
   fonts:
     - family: Poppins

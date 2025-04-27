@@ -1,7 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:stocku_app/app/modules/user/signIn.dart';
 import 'package:stocku_app/app/widgets/textField.dart';
 import 'package:get/get.dart';
 import '../../controllers/authController.dart';

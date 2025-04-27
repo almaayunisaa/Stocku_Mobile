@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 
 import 'app/controllers/laporanController.dart';
 import 'app/modules/user/signUp.dart';
+import 'app/widgets/splashScreen.dart';
 
 Future<void> cekDanKirimStokKeOldData() async {
   final now = DateTime.now();
@@ -31,8 +32,9 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'StockU',
       debugShowCheckedModeBanner: false,
-      initialRoute: '/signIn',
+      initialRoute: '/splash',
       getPages: [
+        GetPage(name: '/splash', page: () => SplashScreenPage()),
         GetPage(name: '/signUp', page: () => Signup()),
         GetPage(name: '/signIn', page: () => Signin()),
         GetPage(name: '/home', page: () => Home())

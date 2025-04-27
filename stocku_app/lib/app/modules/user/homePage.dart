@@ -90,7 +90,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
 
-              // Riwayat Section
+
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 21, vertical: 10),
                 child: Container(

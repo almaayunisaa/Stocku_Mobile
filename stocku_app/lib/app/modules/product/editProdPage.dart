@@ -47,7 +47,6 @@ class _EditProdPageState extends State<EditProdPage> {
   @override
   void initState() {
     super.initState();
-    // Initialize controllers with values from the passed product
     kategoriController.text = widget.kategori;
     kodeController.text = widget.product.ID;
     namaController.text = widget.product.namaProduk;

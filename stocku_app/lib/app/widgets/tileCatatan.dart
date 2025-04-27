@@ -12,7 +12,6 @@ class TileCatatan extends StatelessWidget {
     return FutureBuilder<List<Map<String, dynamic>>>(
       future: productController.ambilCatatan(),
       builder: (context, snapshot) {
-        // Handle loading state
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Padding(
             padding: EdgeInsets.symmetric(vertical: 20),
@@ -20,7 +19,6 @@ class TileCatatan extends StatelessWidget {
           );
         }
 
-        // Handle error state
         if (snapshot.hasError) {
           return Padding(
             padding: const EdgeInsets.all(20),
@@ -28,7 +26,6 @@ class TileCatatan extends StatelessWidget {
           );
         }
 
-        // Handle empty data
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
           return const Padding(
             padding: EdgeInsets.all(20),
@@ -36,7 +33,6 @@ class TileCatatan extends StatelessWidget {
           );
         }
 
-        // Display data in the exact format from the second example
         final data = snapshot.data!;
         return ConstrainedBox(
           constraints: BoxConstraints(

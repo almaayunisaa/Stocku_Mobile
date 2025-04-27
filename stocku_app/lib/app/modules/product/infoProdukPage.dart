@@ -172,7 +172,6 @@ class InfoProdukPage extends StatelessWidget {
                     ),
                   ),
 
-                  // Details section
                   Container(
                     margin: EdgeInsets.symmetric(vertical: 11),
                     padding: EdgeInsets.all(22),

@@ -179,11 +179,11 @@ class _LapPageState extends State<LapPage> {
                                               BarChartRodData(
                                                 toY: laporanController.dataGrafik[index].toDouble(),
                                                 color: Color(0xFFEA8D45),
-                                                width: 20, // Lebar batang
+                                                width: 20,
                                                 borderRadius: BorderRadius.circular(4),
                                               ),
                                             ],
-                                            barsSpace: 8, // Spasi antar batang
+                                            barsSpace: 8,
                                           ),
                                         ),
                                       ),
